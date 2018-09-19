@@ -26,7 +26,7 @@ class OmniglotTask(object):
         random.shuffle(chars)
         classes = chars[:num_cls]
         labels = np.array(range(len(classes)))
-        labels = dict(zip(classes, labels)) 
+        labels = dict(zip(classes, labels))
         instances = dict()
         # Now sample from the chosen classes to create class-balanced train and val sets
         self.train_ids = []
@@ -41,10 +41,45 @@ class OmniglotTask(object):
         # Keep instances separated by class for class-balanced mini-batches
         self.train_labels = [labels[self.get_class(x)] for x in self.train_ids]
         self.val_labels = [labels[self.get_class(x)] for x in self.val_ids]
-        
+
 
     def get_class(self, instance):
         return os.path.join(*instance.split('/')[:-1])
+
+
+class Cifar100Task(object):
+    def __init__(self, num_cls, num_inst, split='train'):
+        self.dataset = 'cifar100'
+        self.num_cl = num_cls
+        self.num_inst = num_inst
+
+        labels = np.array(range(len(100)))
+        random.shuffle(labels)
+        classes = labels[:num_cls]
+        labels = np.array(range(len(classes)))
+        labels = dict(zip(classes, labels))
+        instances = dict()
+        # Now sample from the chosen classes to create class-balanced train and val sets
+        self.train_ids = []
+        self.val_ids = []
+        for c in classes:
+            # First get all isntances of that class
+            temp = None
+            if split == "train":
+                temp = [c * 600 + x for x in range(0, 500)]
+            else:
+                temp = [c * 600 + 500 + x for x in range(0, 100)]
+            instances[c] = random.sample(temp, len(temp))
+            # Sample num_inst instances randomly each for train and val
+            self.train_ids += instances[c][:num_inst]
+            self.val_ids += instances[c][num_inst:num_inst*2]
+        # Keep instances separated by class for class-balanced mini-batches
+        self.train_labels = [labels[self.get_class(x)] for x in self.train_ids]
+        self.val_labels = [labels[self.get_class(x)] for x in self.val_ids]
+
+
+    def get_class(self, x):
+        return x / 600
 
 class MNISTTask(object):
     '''
@@ -68,7 +103,7 @@ class MNISTTask(object):
 
         # To create a task, we randomly shuffle the labels
         self.label_map = dict(zip(range(10), np.random.permutation(np.array(range(10)))))
-        
+
         # Choose num_inst ids from each of 10 classes
         self.train_ids = []
         self.val_ids = []
