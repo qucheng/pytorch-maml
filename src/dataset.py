@@ -73,7 +73,7 @@ class MNIST(data.Dataset):
         return img, target
 
 def norm_img(data):
-    data = data / 255
+    data = data / 255.0
     data[:, 0, :, :] = (data[:, 0, :, :] - 0.4914) / 0.2023
     data[:, 1, :, :] = (data[:, 1, :, :] - 0.4822) / 0.1994
     data[:, 2, :, :] = (data[:, 2, :, :] - 0.4465) / 0.2010
@@ -87,8 +87,12 @@ class Cifar100(FewShotDataset):
         self.train_data = []
         self.test_data = []
         for i in range(0, 100):
-            self.train_data.append(norm_img(np.load(os.path.join(train_dir, 'data_%d.npy' % i))))
-            self.test_data.append(norm_img(np.load(os.path.join(test_dir, 'data_%d.npy' % i))))
+            tmp_data = np.load(os.path.join(train_dir, 'data_%d.npy' % i))
+            tmp_data = norm_img(tmp_data)
+            self.train_data.append(tmp_data)
+            tmp_data = np.load(os.path.join(test_dir, 'data_%d.npy' % i))
+            tmp_data = norm_img(tmp_data)
+            self.test_data.append(tmp_data)
         self.train_size = self.train_data[0].shape[0]
         self.test_size = self.test_data[0].shape[0]
             #if subset_size is not None:
@@ -103,7 +107,7 @@ class Cifar100(FewShotDataset):
         label = img_id / (self.train_size + self.test_size)
         cls_idx = img_id % (self.train_size + self.test_size)
         if (cls_idx < self.train_size):
-            data = self.train_data[cls_idx]
+            data = self.train_data[label][cls_idx]
         else:
-            data = self.test_data[cls_idx - self.train_size]
-        return data, label
+            data = self.test_data[label][cls_idx - self.train_size]
+        return data, self.labels[idx]

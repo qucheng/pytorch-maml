@@ -27,6 +27,6 @@ def evaluate(net, loader, weights=None):
     for i, (in_, target) in enumerate(loader):
         batch_size = in_.numpy().shape[0]
         l, out = forward_pass(net, in_, target, weights)
-        loss += l.data.cpu().numpy()[0]
+        loss += l.data.cpu().numpy()
         num_correct += count_correct(np.argmax(out.data.cpu().numpy(), axis=1), target.numpy())
     return float(loss) / len(loader), float(num_correct) / (len(loader)*batch_size)

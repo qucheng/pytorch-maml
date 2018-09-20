@@ -34,6 +34,7 @@ class Cifar100Net(nn.Module):
         self._init_weights()
 
     def forward(self, x, weights=None):
+        x = x.float()
         ''' Define what happens to data in the net '''
         if weights is None:
             x = self.features(x)

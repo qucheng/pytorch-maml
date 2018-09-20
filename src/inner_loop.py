@@ -6,11 +6,12 @@ import torch.nn as nn
 from torch.autograd import Variable
 
 from omniglot_net import OmniglotNet
+from cifar100 import Cifar100Net
 from layers import *
 from score import *
 from data_loading import *
 
-class InnerLoop(OmniglotNet):
+class InnerLoop(Cifar100Net):
     '''
     This module performs the inner loop of MAML
     The forward method updates weights with gradient steps on training data, 

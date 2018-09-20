@@ -48,12 +48,13 @@ class OmniglotTask(object):
 
 
 class Cifar100Task(object):
-    def __init__(self, num_cls, num_inst, split='train'):
+    def __init__(self, root, num_cls, num_inst, split='train'):
         self.dataset = 'cifar100'
+        self.root = root
         self.num_cl = num_cls
         self.num_inst = num_inst
 
-        labels = np.array(range(len(100)))
+        labels = np.array(range(100))
         random.shuffle(labels)
         classes = labels[:num_cls]
         labels = np.array(range(len(classes)))
@@ -66,9 +67,9 @@ class Cifar100Task(object):
             # First get all isntances of that class
             temp = None
             if split == "train":
-                temp = [c * 600 + x for x in range(0, 500)]
+                temp = [c * 600 + x for x in range(500)]
             else:
-                temp = [c * 600 + 500 + x for x in range(0, 100)]
+                temp = [c * 600 + 500 + x for x in range(100)]
             instances[c] = random.sample(temp, len(temp))
             # Sample num_inst instances randomly each for train and val
             self.train_ids += instances[c][:num_inst]

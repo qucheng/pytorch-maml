@@ -87,6 +87,6 @@ for i in range(5):
     opt = SGD(net.weights.values(), lr=0.001, momentum=0.9, weight_decay=0.0005)
     #opt = Adam(net.weights.values(), lr=1)
     loss_fn = CrossEntropyLoss()
-    task = Task('../data/omniglot', num_classes, num_shot)
+    task = Task('~/omniglot', num_classes, num_shot)
     train_step(task)
 
